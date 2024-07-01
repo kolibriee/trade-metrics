@@ -1,0 +1,4 @@
+server:
+  port: "8000"
+  readTimeout: 10s
+  writeTimeout: 15s
