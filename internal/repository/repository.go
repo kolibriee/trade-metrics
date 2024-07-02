@@ -5,24 +5,24 @@ import (
 	"github.com/kolibriee/trade-metrics/internal/domain"
 )
 
-type orderbook interface {
+type Orderbook interface {
 	GetOrderBook(exchangeName, pair string) (*domain.AsksBids, error)
 	SaveOrderBook(exchangeName, pair string, asksBids *domain.AsksBids) error
 }
 
-type orderhistory interface {
+type Orderhistory interface {
 	GetOrderHistory(client *domain.Client) ([]*domain.HistoryOrder, error)
 	SaveOrder(order *domain.HistoryOrder) error
 }
 
 type Repository struct {
-	orderbook
-	orderhistory
+	Orderbook
+	Orderhistory
 }
 
 func NewRepository(db driver.Conn) *Repository {
 	return &Repository{
-		orderbook:    NewOrderBookCH(db),
-		orderhistory: NewOrderHistoryCH(db),
+		Orderbook:    NewOrderBookCH(db),
+		Orderhistory: NewOrderHistoryCH(db),
 	}
 }

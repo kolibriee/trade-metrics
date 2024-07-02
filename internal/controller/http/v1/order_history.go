@@ -12,12 +12,12 @@ import (
 func (h *Handler) GetOrderHistory(c *gin.Context) {
 	var client domain.Client
 	if err := c.BindJSON(&client); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, errors.New("invalid json").Error()+err.Error())
+		newErrorResponse(c, http.StatusBadRequest, errors.New("invalid input body").Error())
 		return
 	}
 	orderHistory, err := h.repo.GetOrderHistory(&client)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, errors.New("failed to get order history").Error()+err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, errors.New("server error").Error())
 		return
 	}
 	c.JSON(http.StatusOK, orderHistory)
@@ -26,12 +26,12 @@ func (h *Handler) GetOrderHistory(c *gin.Context) {
 func (h *Handler) SaveOrder(c *gin.Context) {
 	var order domain.HistoryOrder
 	if err := c.BindJSON(&order); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, errors.New("invalid json").Error()+err.Error())
+		newErrorResponse(c, http.StatusBadRequest, errors.New("invalid input body").Error())
 		return
 	}
 	order.TimePlaced = time.Now()
 	if err := h.repo.SaveOrder(&order); err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, errors.New("failed to save order").Error()+err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, errors.New("server error").Error())
 		return
 	}
 	c.JSON(http.StatusOK, statusResponse{
