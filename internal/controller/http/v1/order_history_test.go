@@ -20,15 +20,15 @@ func TestHandler_GetOrderHistory(t *testing.T) {
 
 	tests := []struct {
 		name                 string
-		inputBody            string
+		queryParams          string
 		inputClient          *domain.Client
 		mockBehavior         mockBehavior
 		expectedStatusCode   int
 		expectedResponseBody string
 	}{
 		{
-			name:      "OK",
-			inputBody: `{"client_name":"Misha","exchange_name":"binance","label":"111","pair":"BTCUSDT"}`,
+			name:        "OK",
+			queryParams: "client-name=Misha&exchange-name=binance&label=111&pair=BTCUSDT",
 			inputClient: &domain.Client{
 				ClientName:   "Misha",
 				ExchangeName: "binance",
@@ -55,16 +55,16 @@ func TestHandler_GetOrderHistory(t *testing.T) {
 			expectedResponseBody: `[{"client":{"client_name":"Misha","exchange_name":"binance","label":"111","pair":"BTCUSDT"},"side":"buy","type":"limit","base_qty":1,"price":50000,"algorithm_name_placed":"alg1","lowest_sell_prc":49900,"highest_buy_prc":50100,"commission_quote_qty":0.1,"time_placed":"0001-01-01T00:00:00Z"}]`,
 		},
 		{
-			name:                 "Invalid Input Body",
-			inputBody:            `{"client_name":"Misha","excme":"binance","lal":"test","pr"}`,
+			name:                 "Invalid Input",
+			queryParams:          "client-name=&exchange-name=&label=&pair=",
 			inputClient:          &domain.Client{},
 			mockBehavior:         func(r *mock_repository.Mockorderhistory, client *domain.Client) {},
 			expectedStatusCode:   400,
-			expectedResponseBody: `{"message":"invalid input body"}`,
+			expectedResponseBody: `{"message":"invalid input"}`,
 		},
 		{
-			name:      "Server Error",
-			inputBody: `{"client_name":"Misha","exchange_name":"binance","label":"111","pair":"BTCUSDT"}`,
+			name:        "Server Error",
+			queryParams: "client-name=Misha&exchange-name=binance&label=111&pair=BTCUSDT",
 			inputClient: &domain.Client{
 				ClientName:   "Misha",
 				ExchangeName: "binance",
@@ -90,11 +90,10 @@ func TestHandler_GetOrderHistory(t *testing.T) {
 			handler := NewHandler(&repository.Repository{Orderhistory: repo})
 
 			r := gin.New()
-			r.POST("/orderhistory", handler.GetOrderHistory)
+			r.GET("/orderhistory", handler.GetOrderHistory)
 
 			w := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/orderhistory", bytes.NewBufferString(tt.inputBody))
-			req.Header.Set("Content-Type", "application/json")
+			req := httptest.NewRequest("GET", "/orderhistory?"+tt.queryParams, nil)
 
 			r.ServeHTTP(w, req)
 

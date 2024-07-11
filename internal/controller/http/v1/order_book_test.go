@@ -31,10 +31,24 @@ func TestHandler_GetOrderBook(t *testing.T) {
 			exchange_name: "binance",
 			pair:          "BTCUSDT",
 			mockBehavior: func(r *mock_repository.Mockorderbook, exchangeName, pair string) {
-				r.EXPECT().GetOrderBook(exchangeName, pair).Return(&domain.AsksBids{}, nil)
+				r.EXPECT().GetOrderBook(exchangeName, pair).Return(&domain.AsksBids{
+					Id: 0,
+					Asks: []domain.DepthOrder{
+						{
+							Price:   50000,
+							BaseQty: 1,
+						},
+					},
+					Bids: []domain.DepthOrder{
+						{
+							Price:   51000,
+							BaseQty: 2,
+						},
+					},
+				}, nil)
 			},
 			expectedStatusCode:   200,
-			expectedResponseBody: `{"id":0,"asks":null,"bids":null}`,
+			expectedResponseBody: `{"id":0,"asks":[{"price":50000,"base_qty":1}],"bids":[{"price":51000,"base_qty":2}]}`,
 		},
 		{
 			name:                 "empty input",

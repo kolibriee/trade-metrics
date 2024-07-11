@@ -18,7 +18,7 @@ func (h *Handler) GetOrderBook(c *gin.Context) {
 	}
 	orderBook, err := h.repo.GetOrderBook(exchange, pair)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, errors.New("server error").Error())
+		newErrorResponse(c, http.StatusInternalServerError, errors.New("server error").Error()+err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, orderBook)

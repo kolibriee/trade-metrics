@@ -10,10 +10,20 @@ import (
 )
 
 func (h *Handler) GetOrderHistory(c *gin.Context) {
-	var client domain.Client
-	if err := c.BindJSON(&client); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, errors.New("invalid input body").Error())
+	clientName := c.Query("client-name")
+	exchangeName := c.Query("exchange-name")
+	label := c.Query("label")
+	pair := c.Query("pair")
+	if clientName == "" || exchangeName == "" || label == "" || pair == "" {
+		newErrorResponse(c, http.StatusBadRequest, errors.New("invalid input").Error())
 		return
+	}
+
+	client := domain.Client{
+		ClientName:   clientName,
+		ExchangeName: exchangeName,
+		Label:        label,
+		Pair:         pair,
 	}
 	orderHistory, err := h.repo.GetOrderHistory(&client)
 	if err != nil {

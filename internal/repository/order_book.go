@@ -22,7 +22,7 @@ func NewOrderBookCH(db driver.Conn) *orderBookCH {
 func (o *orderBookCH) GetOrderBook(exchangeName, pair string) (*domain.AsksBids, error) {
 	query := `
         SELECT id, asks, bids 
-        FROM order_book FINAL
+        FROM order_book
         WHERE exchange = ? AND pair = ?
     `
 
